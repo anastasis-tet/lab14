@@ -1,0 +1,13 @@
+[package]
+name = "climate-validator"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "climate_validator"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.22.2", features = ["extension-module"] }
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+
