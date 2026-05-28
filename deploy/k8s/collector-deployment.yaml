@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab14-go-collector
+  labels:
+    app: lab14-go-collector
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lab14-go-collector
+  template:
+    metadata:
+      labels:
+        app: lab14-go-collector
+    spec:
+      containers:
+        - name: collector
+          image: anastasis-tet/lab14-go-collector:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: lab14-climate-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+

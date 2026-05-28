@@ -1,0 +1,62 @@
+services:
+  etcd:
+    image: bitnami/etcd:3.5
+    environment:
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_ADVERTISE_CLIENT_URLS: http://etcd:2379
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [climate-net]
+
+  nats:
+    image: nats:2.10-alpine
+    command: ["-js", "-m", "8222"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "8222:8222"
+    networks: [climate-net]
+
+  go-collector:
+    build:
+      context: ./src/go-collector
+    env_file:
+      - .env
+    depends_on:
+      etcd:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks: [climate-net]
+
+  python-api:
+    build:
+      context: ./src/python-pipeline
+    env_file:
+      - .env
+    depends_on:
+      nats:
+        condition: service_healthy
+      go-collector:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks: [climate-net]
+
+networks:
+  climate-net:
+    name: lab14-climate-net
+
+volumes:
+  climate-data:
+
