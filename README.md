@@ -45,6 +45,9 @@ deploy/k8s/           # Kubernetes deployment/service/hpa
 
 ```bash
 cp .env.example .env
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e "src/python-pipeline[dev]"
 make test
 docker compose build
 ```
@@ -81,6 +84,20 @@ cd src/python-pipeline
 uvicorn climate_pipeline.api.main:create_app --factory --host 0.0.0.0 --port 8000
 ```
 
+Запуск сравнения производительности Go vs Python для задания 6:
+
+```bash
+make benchmark
+```
+
+Команда поднимает локальный mock NASA EONET API, запускает Go-сборщик и Python
+asyncio/aiohttp-сборщик при одинаковой нагрузке, измеряет скорость, CPU и память,
+после чего обновляет:
+
+- `reports/performance/go_vs_python_benchmark.md` — отчёт с таблицей и графиками.
+- `reports/performance/benchmark_results.json` — машинно-читаемые результаты.
+- `reports/performance/charts/*.svg` — графики сравнения.
+
 ## Примеры запросов
 
 Проверка Go-сборщика:
@@ -111,9 +128,9 @@ curl -X POST http://localhost:8000/api/v1/analyze \
 - NATS используется для потоковой передачи агрегатов.
 - FastAPI отдаёт real-time API для dashboard и WebSocket обновлений.
 - Kubernetes HPA масштабирует Go-сборщик по CPU; NATS monitoring endpoint доступен для метрик очереди.
-- Добавлен asyncio/aiohttp Python-сборщик и benchmark для сравнения с Go.
+- Добавлен запускаемый benchmark Go vs Python: одинаковая mock-нагрузка EONET,
+  замеры wall-clock времени, скорости сбора, CPU, памяти и отчёт с SVG-графиками.
 
 ## Источник
 
 NASA EONET v3 API: https://eonet.gsfc.nasa.gov/docs/v3
-

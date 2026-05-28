@@ -1,0 +1,20 @@
+[
+  {
+    "collector": "Go goroutines",
+    "requests": 40,
+    "events": 10000,
+    "elapsed_seconds": 0.160506875,
+    "events_per_second": 62302.62722391175,
+    "cpu_seconds": 0.11875100000000005,
+    "peak_memory_mb": 17.625
+  },
+  {
+    "collector": "Python asyncio/aiohttp",
+    "requests": 40,
+    "events": 10000,
+    "elapsed_seconds": 0.7876036249799654,
+    "events_per_second": 12696.741968721099,
+    "cpu_seconds": 0.6843410000000001,
+    "peak_memory_mb": 2.342646598815918
+  }
+]

@@ -21,12 +21,18 @@
 - Dockerfile для Go и Python сервисов.
 - `docker-compose.yml`, `.env.example`, `Makefile`, Kubernetes manifests.
 - Тесты Go и Python для ключевой бизнес-логики.
+- Запускаемый benchmark Go vs Python для задания 6: Go-команда `cmd/benchmark`,
+  Python runner с локальным mock EONET API, JSON-результаты, Markdown-отчёт и SVG-графики.
 
 ## Runtime issues и исправления
 
 - Первоначально рассматривался NASA POWER API, но пользователь уточнил, что нужен именно NASA Earth Observatory API. Решение: использовать NASA EONET v3 как официальный API Earth Observatory Natural Event Tracker.
 - Локальная папка не разрешила создать `.git` обычным `git init`. Решение: использовать отдельный git-dir вне рабочей папки при создании истории коммитов, если ограничение сохранится.
 - Валидация Rust/PyO3 может отсутствовать на машине проверяющего. Решение: добавить fallback-валидатор на Pydantic без изменения публичного API.
+- Telegram review bot отклонил первую попытку из-за частичного выполнения задания 6:
+  был только класс `AsyncEONETCollector`, но не было запускаемого сравнения Go vs Python
+  и отчёта с графиками. Решение: добавить воспроизводимый benchmark на одинаковой
+  mock-нагрузке, измерять wall-clock время, скорость, CPU и память, сохранять отчёт в Git.
 
 ## Что исправлялось вручную после генерации
 
@@ -34,6 +40,8 @@
 - Разделение Python-кода на `api`, `clients`, `models`, `repositories`, `services`, `telemetry`.
 - Добавлены тестируемые pure-функции вместо логики в handlers.
 - Добавлен graceful shutdown, таймауты HTTP-сервера и централизованная конфигурация.
+- Обновлён `.gitignore`: папка `reports/performance` разрешена к коммиту, чтобы
+  benchmark-отчёт и графики задания 6 были доступны проверяющему боту.
 
 ## Улучшения после генерации
 
@@ -41,4 +49,5 @@
 - Добавлена деградация при недоступности etcd/NATS.
 - Добавлены health endpoints и структурированные JSON-логи.
 - Добавлены тесты negative/edge cases для конфигурации, валидации и агрегации.
-
+- Добавлены тесты генерации benchmark-отчёта и команды `make benchmark` для
+  воспроизводимого обновления результатов.

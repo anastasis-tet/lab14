@@ -19,7 +19,9 @@ bin/
 *.out
 *.log
 data/
-reports/
+reports/*
+!reports/performance/
+!reports/performance/**
 *.parquet
 *.arrow
 *.png

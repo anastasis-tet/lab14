@@ -1,4 +1,6 @@
-.PHONY: test test-go test-python lint run-collector run-api docker-up docker-down
+PYTHON ?= python3
+
+.PHONY: test test-go test-python lint benchmark run-collector run-api docker-up docker-down
 
 test: test-go test-python
 
@@ -6,11 +8,14 @@ test-go:
 	cd src/go-collector && go test ./...
 
 test-python:
-	cd src/python-pipeline && pytest
+	cd src/python-pipeline && $(PYTHON) -m pytest
 
 lint:
 	cd src/go-collector && gofmt -w .
-	cd src/python-pipeline && ruff check . ../../tests/python && ruff format . ../../tests/python
+	cd src/python-pipeline && $(PYTHON) -m ruff check . ../../tests/python && $(PYTHON) -m ruff format . ../../tests/python
+
+benchmark:
+	cd src/python-pipeline && $(PYTHON) -m climate_pipeline.benchmark
 
 run-collector:
 	cd src/go-collector && go run ./cmd/collector
